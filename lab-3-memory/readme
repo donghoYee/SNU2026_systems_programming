@@ -1,0 +1,158 @@
+이름: 이동호
+학번: 2021-13385
+
+================================================================================
+성능 측정 결과 (make test2-local)
+================================================================================
+
+       Executable          Test   Count   Size Time_m Time_f   Time        Mem
+==============================================================================
+ ./testheapmgrgnu    LIFO_fixed   50000   1000   0.02   0.00   0.02   50282496
+ ./testheapmgrgnu    FIFO_fixed   50000   1000   0.02   0.00   0.02       8192
+ ./testheapmgrgnu   LIFO_random   50000   1000   0.01   0.00   0.01   25681920
+ ./testheapmgrgnu   FIFO_random   50000   1000   0.01   0.00   0.01   25681920
+ ./testheapmgrgnu  random_fixed   50000   1000      -      -   0.01   10743808
+ ./testheapmgrgnu random_random   50000   1000      -      -   0.00    8110080
+ ./testheapmgrgnu         worst   50000   1000      -      -   0.00   13651968
+==============================================================================
+ ./testheapmgrgnu    LIFO_fixed   30000  10000   0.03   0.04   0.07       4096
+ ./testheapmgrgnu    FIFO_fixed   30000  10000   0.03   0.00   0.03       4096
+ ./testheapmgrgnu   LIFO_random   30000  10000   0.02   0.00   0.02  150515712
+ ./testheapmgrgnu   FIFO_random   30000  10000   0.02   0.00   0.02   48517120
+ ./testheapmgrgnu  random_fixed   30000  10000      -      -   0.01       4096
+ ./testheapmgrgnu random_random   30000  10000      -      -   0.01   47271936
+ ./testheapmgrgnu         worst   30000  10000      -      -   0.01   75612160
+==============================================================================
+  ./testheapmgrkr    LIFO_fixed   50000   1000   0.01   0.00   0.01   51200000
+  ./testheapmgrkr    FIFO_fixed   50000   1000   0.01   0.00   0.01   51200000
+  ./testheapmgrkr   LIFO_random   50000   1000   0.02   0.01   0.04   26296320
+  ./testheapmgrkr   FIFO_random   50000   1000   0.02   0.00   0.03   26296320
+  ./testheapmgrkr  random_fixed   50000   1000      -      -   0.24   16171008
+  ./testheapmgrkr random_random   50000   1000      -      -   0.09    8273920
+  ./testheapmgrkr         worst   50000   1000      -      -   0.64   14139392
+==============================================================================
+  ./testheapmgrkr    LIFO_fixed   30000  10000  19.99  30.93  50.93  491520000
+  ./testheapmgrkr    FIFO_fixed   30000  10000  20.15   0.00  20.16  491520000
+  ./testheapmgrkr   LIFO_random   30000  10000   1.10   1.25   2.35  157827072
+  ./testheapmgrkr   FIFO_random   30000  10000   1.29   0.39   1.67  157827072
+  ./testheapmgrkr  random_fixed   30000  10000      -      -   1.33  111247360
+  ./testheapmgrkr random_random   30000  10000      -      -   0.41   49332224
+  ./testheapmgrkr         worst   30000  10000      -      -   1.77  103743488
+==============================================================================
+./testheapmgrbase    LIFO_fixed   50000   1000   0.52   0.43   0.95   51250000
+./testheapmgrbase    FIFO_fixed   50000   1000   0.43   0.00   0.43   51250000
+./testheapmgrbase   LIFO_random   50000   1000   0.05   0.03   0.08   26174400
+./testheapmgrbase   FIFO_random   50000   1000   0.05   0.00   0.05   26174400
+./testheapmgrbase  random_fixed   50000   1000      -      -   0.23   16186800
+./testheapmgrbase random_random   50000   1000      -      -   0.09    8282000
+./testheapmgrbase         worst   50000   1000      -      -   0.52   13940000
+==============================================================================
+./testheapmgrbase    LIFO_fixed   30000  10000   4.45   5.50   9.95  492000000
+./testheapmgrbase    FIFO_fixed   30000  10000   4.36   0.00   4.36  492000000
+./testheapmgrbase   LIFO_random   30000  10000   0.80   0.71   1.51  152208400
+./testheapmgrbase   FIFO_random   30000  10000   0.81   0.09   0.90  152208400
+./testheapmgrbase  random_fixed   30000  10000      -      -   0.60  110929600
+./testheapmgrbase random_random   30000  10000      -      -   0.25   48150400
+./testheapmgrbase         worst   30000  10000      -      -   0.43  103369200
+==============================================================================
+   ./testheapmgr1    LIFO_fixed   50000   1000   0.12   0.00   0.12   58744032
+   ./testheapmgr1    FIFO_fixed   50000   1000   0.12   0.00   0.12   58744032
+   ./testheapmgr1   LIFO_random   50000   1000   0.03   0.00   0.04   27353024
+   ./testheapmgr1   FIFO_random   50000   1000   0.03   0.00   0.03   27353024
+   ./testheapmgr1  random_fixed   50000   1000      -      -   0.02   18536896
+   ./testheapmgr1 random_random   50000   1000      -      -   0.01    8569408
+   ./testheapmgr1         worst   50000   1000      -      -   1.16   15329536
+==============================================================================
+   ./testheapmgr1    LIFO_fixed   30000  10000   0.04   0.00   0.04  300960000
+   ./testheapmgr1    FIFO_fixed   30000  10000   0.04   0.00   0.04  300960000
+   ./testheapmgr1   LIFO_random   30000  10000   0.97   0.00   0.97  163027856
+   ./testheapmgr1   FIFO_random   30000  10000   0.97   0.00   0.97  163027856
+   ./testheapmgr1  random_fixed   30000  10000      -      -   0.02   95344128
+   ./testheapmgr1 random_random   30000  10000      -      -   0.09   50422384
+   ./testheapmgr1         worst   30000  10000      -      -   0.72   90667520
+==============================================================================
+   ./testheapmgr2    LIFO_fixed   50000   1000   0.02   0.00   0.02   52008576
+   ./testheapmgr2    FIFO_fixed   50000   1000   0.02   0.00   0.02   52008576
+   ./testheapmgr2   LIFO_random   50000   1000   0.01   0.00   0.02   26966496
+   ./testheapmgr2   FIFO_random   50000   1000   0.01   0.00   0.01   26966496
+   ./testheapmgr2  random_fixed   50000   1000      -      -   0.01   16415104
+   ./testheapmgr2 random_random   50000   1000      -      -   0.01    8520064
+   ./testheapmgr2         worst   50000   1000      -      -   0.01   14704512
+==============================================================================
+   ./testheapmgr2    LIFO_fixed   30000  10000   0.04   0.00   0.04  300960000
+   ./testheapmgr2    FIFO_fixed   30000  10000   0.04   0.00   0.04  300960000
+   ./testheapmgr2   LIFO_random   30000  10000   0.03   0.00   0.03  151259312
+   ./testheapmgr2   FIFO_random   30000  10000   0.03   0.00   0.03  151259312
+   ./testheapmgr2  random_fixed   30000  10000      -      -   0.01   95344128
+   ./testheapmgr2 random_random   30000  10000      -      -   0.02   47757808
+   ./testheapmgr2         worst   30000  10000      -      -   0.13   76324864
+
+================================================================================
+구현 설계 설명
+================================================================================
+
+[공통 자료구조: chunk.h / chunk.c]
+
+모든 블록은 경계 태그(boundary tag) 방식으로 구성된다.
+- 헤더(struct Chunk): status(free/used), span(블록 전체 유닛 수), next_free 포인터
+- 푸터(struct Footer): span(헤더와 동일 값), _pad, prev_free 포인터
+- CHUNK_UNIT = 16바이트. 헤더와 푸터 각각 정확히 1 유닛을 차지한다.
+- 최소 블록 크기 = span 2 (헤더 1 + 푸터 1, 페이로드 0).
+
+푸터를 이용하면 이전 물리 블록의 헤더 위치를 O(1)에 계산할 수 있다.
+  이전 블록 헤더 = 현재 블록 - prev_footer.span * CHUNK_UNIT
+
+[heapmgr1.c: 이중 연결 자유 리스트 (Doubly-Linked Free List)]
+
+자료구조:
+- 자유 블록들을 이중 연결 리스트(doubly-linked list)로 관리.
+- next_free는 헤더에, prev_free는 푸터에 저장.
+- LIFO 순서로 리스트 헤드에 삽입.
+
+malloc():
+- 이중 연결 자유 리스트를 순회하며 first-fit으로 블록을 찾는다.
+- 찾은 블록이 need_span보다 크면 분할(split): 앞부분은 자유 블록으로 유지,
+  뒷부분을 할당 블록으로 반환한다.
+- 분할 시 span 변경으로 푸터 위치가 이동하므로, span 변경 전에 prev_free를
+  저장한 뒤 새 푸터 위치에 복원한다.
+- 자유 리스트에 적합한 블록이 없으면 sbrk()로 힙을 확장한다.
+
+free():
+- 오른쪽 물리 이웃: 헤더의 span으로 O(1) 접근 후 자유이면 이중 연결 포인터로
+  O(1) 제거 후 병합.
+- 왼쪽 물리 이웃: 이전 블록 푸터로 O(1) 접근 후 자유이면 마찬가지로 병합.
+- 병합된 블록을 리스트 헤드에 O(1) 삽입.
+- free() 전체가 O(1).
+
+[heapmgr2.c: 분리 자유 리스트 (Segregated Free Lists)]
+
+자료구조:
+- NUM_BINS = 96개의 이중 연결 자유 리스트 배열 s_bins[].
+- 앞 EXACT_BINS(64)개: span 2~65의 정확 크기 클래스 (bin[i] = span i+2).
+- 뒤 LOG_BINS(32)개: span 66 이상을 로그 스케일로 분류.
+
+malloc():
+- need_span에 해당하는 최소 빈 인덱스부터 시작해 적합한 블록을 찾는다.
+- 대부분의 경우 한두 개의 빈만 확인하면 되므로 실질적으로 O(1)에 가깝다.
+- 분할 시 detach 후 remainder를 다시 적절한 빈에 삽입(heapmgr1보다 단순).
+
+free():
+- heapmgr1과 동일한 O(1) 병합 로직.
+- 삽입/제거 시 블록의 span으로 빈 인덱스를 계산하여 해당 빈의 헤드를 조작.
+
+heapmgr2의 핵심 개선점: worst case(교대로 다양한 크기를 할당하는 패턴)에서
+heapmgr1은 리스트 전체를 순회해야 하지만, heapmgr2는 크기 클래스로 바로
+점프하므로 malloc이 사실상 O(1)이 되어 worst 케이스도 빠르다.
+
+================================================================================
+LLM 도움 여부
+================================================================================
+
+본 과제의 설계 및 구현 전 과정에서 Claude Code (claude-sonnet-4-6, Anthropic)의
+도움을 받았습니다.
+
+구체적으로 다음과 같은 지원을 받았습니다:
+- heapmgr1/heapmgr2의 설계 방향에 대한 조언 (경계 태그, 이중 연결 리스트, 분리 빈)
+- 분할(split) 시 푸터 이동 문제(saved_prev 이슈) 디버깅 조언
+- make check1/check2, make test1-local/test2-local, make test1-remote/test2-remote
+  실행 결과 해석 및 성능 분석

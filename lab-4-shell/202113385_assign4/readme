@@ -1,0 +1,178 @@
+==========================================
+ Lab 4: A Unix Shell (snush)
+==========================================
+
+이름: 이동호
+학번: 202113385
+
+소요 시간: 약 18시간
+
+
+------------------------------------------
+1. 구현 개요
+------------------------------------------
+
+snush는 fork/exec, pipe, 시그널 처리를 기반으로 동작하는 간단한
+대화형 유닉스 셸이다. 골격 코드(snush.c, lexsyn.c, util.c 등)에서
+이미 제공된 lexer/syntax checker와 token/dynarray ADT는 그대로
+사용했고, TODO로 표시된 함수들과 job 관리 자료구조를 채워서
+완성했다.
+
+
+------------------------------------------
+2. 파일 구성
+------------------------------------------
+
+- snush.c   : 메인 루프, 시그널 등록, BG 완료 출력, 셸 종료 정리
+- execute.c : fork_exec, iter_pipe_fork_exec, redirection,
+              SIGCHLD/SIGINT 핸들러 본체, wait_fg
+- job.c/.h  : job, job_manager 자료구조와 API
+- token.c/.h, lexsyn.c/.h, util.c/.h, dynarray.c/.h : 골격 그대로
+- Makefile  : 골격 그대로 사용
+
+
+------------------------------------------
+3. Job 관리자 설계
+------------------------------------------
+
+job_manager는 MAX_JOBS(=16) 크기의 슬롯 배열을 가진다.
+각 슬롯은 in_use 플래그, job_id, 프로세스 그룹 id(pgid),
+파이프라인 내 pid 배열, 남은 프로세스 수, 상태(FG/BG)를
+저장한다.
+
+job_id는 현재 활성 잡 중 최댓값 + 1로 할당하며, 활성 잡이
+없으면 0부터 시작한다. 그래서 BG가 모두 끝나면 다음 BG는
+다시 [0]번을 받는다.
+
+BG 잡이 끝났을 때 완료 메시지를 시그널 핸들러에서 직접
+출력하면 async-signal-safe 위반이므로, 핸들러에서는
+done_jids/done_pgids 큐에 jobid와 pgid를 적재만 하고
+메인 루프의 check_bg_status()가 큐를 비우면서 출력한다.
+
+
+------------------------------------------
+4. fork_exec 구현 포인트
+------------------------------------------
+
+1) child가 parent보다 먼저 exec하고 죽어버리면 SIGCHLD가
+   잡 등록 전에 도착해 race가 발생하므로, pipe(sync_pipe)를
+   만들어 child가 read()로 잡 등록을 기다리게 했다.
+   parent는 add_job 후에 pipe의 write end를 close해서 EOF를
+   보내고, child는 read가 0을 반환하면 진행한다.
+
+2) 시그널 처리를 일관되게 하기 위해 fork 전에 SIGCHLD와
+   SIGINT를 block하고, parent는 잡 등록 직후 unblock한다.
+
+3) setpgid는 child와 parent 양쪽에서 호출했다. 어느 쪽이
+   먼저 스케줄될지 모르기 때문에, 둘 다 setpgid(pid, pid)를
+   호출하면 어느 쪽이 먼저든 결과가 같다.
+
+4) child는 SIGINT/SIGCHLD/SIGTSTP/SIGTTOU/SIGTTIN/SIGQUIT를
+   기본 동작으로 되돌린 뒤 build_command_partial로 argv를
+   조립하고 execvp를 호출한다. 실패하면 execvp의 첫 인자명을
+   error_print(args[0], PERROR)로 출력한 뒤 _exit(127)한다.
+
+
+------------------------------------------
+5. iter_pipe_fork_exec 구현 포인트
+------------------------------------------
+
+- 토큰 배열을 TOKEN_PIPE 기준으로 segment(start/end 쌍)로
+  분할한다. is_background면 마지막 BG 토큰을 미리 잘라낸다.
+
+- 각 segment마다 fork하면서 prev_pipe(이전 단계의 pipe),
+  cur_pipe(이번 단계가 다음과 연결할 pipe)를 관리한다.
+  child는 i>0이면 prev_pipe[0]을 stdin으로, i<n-1이면
+  cur_pipe[1]을 stdout으로 dup2한 뒤 사용 안 하는 끝을
+  모두 close한다. parent는 매 iteration 끝에서 prev_pipe를
+  close하고 cur_pipe를 prev_pipe로 승격한다.
+
+- 모든 child가 같은 pgid를 공유하도록, 첫 번째 child는
+  setpgid(0, 0)으로 자기 pid를 새 pgid로 만들고, 이후
+  child들은 setpgid(0, pgid)로 동일 그룹에 들어간다.
+
+- 각 segment의 첫 word 토큰이 built-in이면 execvp 대신
+  execute_builtin_partial(..., in_child=TRUE)을 호출하고
+  _exit(0)한다. 그래서 'exit | echo'에서 exit는 자식 안에서만
+  실행되어 셸은 죽지 않고, 'cd /tmp | ls'에서 cd는 자식에서만
+  실행되어 부모의 cwd에 영향을 주지 않는다.
+
+
+------------------------------------------
+6. 시그널 처리
+------------------------------------------
+
+sigint_handler와 sigchld_handler는 README의 지시대로 수정하지
+않고 flag만 set한다. 실제 처리는 메인 루프의 check_signals()가
+호출하는 handle_sigint()와 handle_sigchld()에서 한다.
+
+handle_sigchld는 BG 상태인 잡만 순회하면서
+waitpid(-pgid, &status, WNOHANG)로 reap한다. FG 잡은
+wait_fg가 직접 reap하므로 핸들러에서 건드리지 않아
+double-reap 경쟁을 피했다.
+
+handle_sigint는 FG 잡을 찾아 kill(-pgid, SIGINT)을 보낸다.
+자식들은 별도 pgid에 있어서 터미널의 Ctrl-C가 직접 가지
+않기 때문에 셸이 명시적으로 forwarding해 줘야 한다.
+
+wait_fg에서 waitpid가 EINTR을 받으면 sigint_flag를 확인해
+handle_sigint를 호출하도록 보강했다. 그렇지 않으면 SIGINT
+받고도 자식이 계속 살아 있어 wait_fg가 무한 block된다.
+
+
+------------------------------------------
+7. Redirection 구현
+------------------------------------------
+
+redin_handler는 골격에 이미 있어서 그대로 두고,
+redout_handler만 open(O_WRONLY | O_CREAT | O_TRUNC, 0600)으로
+파일을 열어 dup2_e로 STDOUT_FILENO에 복제한 뒤 close하도록
+구현했다. O_TRUNC 덕분에 이미 존재하는 파일을 덮어쓰는
+요구사항이 자연스럽게 충족된다.
+
+stage별 redirection(A < a | B < b)은 syntax_check가
+SYN_FAIL_MULTREDIN/MULTREDOUT으로 막아 주므로 추가 처리
+필요 없었다.
+
+
+------------------------------------------
+8. 종료 처리
+------------------------------------------
+
+terminate_jobs는 in_use인 모든 잡의 pgid에 SIGTERM을 보낸다.
+cleanup은 terminate_jobs 호출 후 manager->jobs와 manager
+자체를 free한다. atexit(cleanup)으로 등록되어 있어 'exit'
+입력이나 EOF로 셸이 종료될 때 정상적으로 해제된다.
+
+
+------------------------------------------
+9. 테스트
+------------------------------------------
+
+snush_sample_test_cases.md에 있는 모든 케이스(기본 명령,
+redirection, pipeline, 시그널, mixed, BG)를 sample_snush와
+비교하며 직접 입력해 동일한 출력이 나오는지 확인했다.
+추가로 다음 시나리오도 검증했다.
+
+- 4단계 이상의 pipeline (cmd1 | cmd2 | cmd3 | cmd4)
+- 동시에 여러 BG 잡 실행 후 [N] done 메시지가 모두 출력되는지
+- BG 잡 종료 후 새 BG가 [0]번으로 재할당되는지
+- pipeline 도중에 SIGINT(Ctrl-C)로 인터럽트되고 셸은 살아남는지
+- BG 실행 중 FG에 SIGINT를 보내도 BG는 영향받지 않는지
+- execvp가 실패하는 명령(nonexistent_cmd)에서 적절한 에러 출력
+
+gcc800(-Wall -Werror -pedantic -std=c99)으로도 경고 없이
+컴파일됨을 확인했다.
+
+
+------------------------------------------
+10. 알려진 제약
+------------------------------------------
+
+- MAX_JOBS = 16, MAX_PROC_PER_JOB = 16으로 고정.
+  16개를 초과하는 동시 잡이나 pipeline 단계는 지원하지 않고
+  에러를 출력한다.
+
+- README 명세대로 stderr redirection(2>), append(>>),
+  per-segment redirection(A < a | B), fg/bg 명령, SIGTSTP
+  처리는 구현 범위 밖이라 제외했다.
